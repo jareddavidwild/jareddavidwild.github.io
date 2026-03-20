@@ -27,7 +27,7 @@ else
 fi
 
 # Copy other small assets unchanged so imports remain valid
-for f in cloudIntelligence.png moonSurface.jpg normalMoon.jpeg; do
+for f in cloudIntelligence.png avatar.jpg cubeTexture.jpg moonSurface.jpg normalMoon.jpeg; do
   if [ -f "$ASSETS_DIR/$f" ]; then
     cp "$ASSETS_DIR/$f" "$OUT_DIR/$f"
   fi

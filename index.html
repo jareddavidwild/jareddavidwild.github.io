@@ -3,29 +3,62 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Jared Wild</title>
+    <meta name="description" content="Jared Wild — Front-end developer, student and surf coach from Cape Town. Portfolio and projects." />
+    <title>Jared Wild — Front-end Developer</title>
   </head>
   <body>
     <div id="app"></div>
   <canvas id="bg"></canvas>
     <main>
-      <header>
-        <h1>Hello and Welcome to my Personal Website!</h1>
+      <header class="site-header">
+        <div class="brand">
+          <a href="/">Jared Wild</a>
+        </div>
+        <nav class="site-nav">
+          <a href="#about">About</a>
+          <a href="#projects">Projects</a>
+          <a href="#contact">Contact</a>
+        </nav>
       </header>
+
+      <section class="hero">
+        <div class="hero-content">
+          <h1>Hi — I'm Jared.</h1>
+          <p class="tagline">Front-end developer, Computer Science student, and part-time surf coach in Cape Town. I build clean, interactive web experiences.</p>
+          <div class="cta">
+            <a class="btn primary" href="#projects">View Projects</a>
+            <a class="btn ghost" href="#contact">Get in touch</a>
+          </div>
+        </div>
+        <div class="hero-card">
+          <!-- Replace or add ./assets/avatar.jpg with your personal photo to show here -->
+          <img src="./assets/avatar.jpg" alt="Personal photo of Jared Wild" class="hero-avatar">
+          <div class="hero-meta">
+            <strong>Freelance Sailor</strong>
+            <p>Freelance Sailor — contract web work</p>
+            <p class="social-links">
+              <a href="https://github.com/dOctorWild" aria-label="GitHub">GitHub</a>
+              <a href="#" aria-label="LinkedIn">LinkedIn</a>
+              <a href="#" aria-label="Twitter">Twitter</a>
+            </p>
+          </div>
+        </div>
+      </section>
 
       <blockquote>
         <p>I like to make stuff and put it on the internet</p>
       </blockquote>
 
-      <section>
+      <section id="about">
         <h2>About Me</h2>
         <p>
-          I'm 21 years old studying Computer Science At Varsity College and currently doing an internship at Cloud Intelligence.
+          I'm 21 years old studying Computer Science at Varsity College. I work as a freelance sailor and take on contract web work.
         </p>
 
         <p>
-          I love to learn new things and new ways of doing things.
+          I love to learn new things and explore different ways of building things on the web.
         </p>
 
         <p>
@@ -51,17 +84,49 @@
       </blockquote>
       <section class="left">
         <h2>Work History</h2>
-        <h3>Cloud Intelligence</h3>
-        <p>Trainee Software Engineer, Front-End Developer</p>
+        <h3>Freelance Sailor</h3>
+        <p>Freelance Sailor — contract web work</p>
         <h3>Surf Emporium</h3>
         <p>South African Surfing certified surf coach.</p>
       </section>
 
       <section class="left">
         <h2>Contact Details</h2>
-        <p>jared@cloudintelligence.co.za</p>
+        <p class="contact-intro">Prefer to email? <a href="mailto:jareddavidwild4@gmail.com">jareddavidwild4@gmail.com</a></p>
+
+        <!-- Netlify-ready contact form. The Netlify attribute will allow Netlify to capture submissions when deployed there. -->
+        <form name="contact" method="POST" data-netlify="true" netlify-honeypot="bot-field" class="contact-form">
+          <input type="hidden" name="form-name" value="contact">
+          <p style="display:none">
+            <label>Don’t fill this out: <input name="bot-field" /></label>
+          </p>
+          <label>
+            Your name
+            <input type="text" name="name" required>
+          </label>
+          <label>
+            Your email
+            <input type="email" name="email" required>
+          </label>
+          <label>
+            Message
+            <textarea name="message" rows="4" required></textarea>
+          </label>
+          <div class="contact-actions">
+            <button type="submit" class="btn primary">Send message</button>
+            <a class="btn ghost" href="mailto:jareddavidwild4@gmail.com">Email instead</a>
+          </div>
+        </form>
+
         <p><a href="https://github.com/dOctorWild">My GitHub</a></p>
       </section>
+
+      <footer class="site-footer">
+        <div class="footer-inner">
+          <p>&copy; 2026 Jared Wild — Built with Three.js & Vite</p>
+          <p><a href="/">Back to top</a></p>
+        </div>
+      </footer>
 
       <blockquote class="ending">
         <h2>Thanks for Visiting!</h2>

@@ -1,0 +1,28 @@
+name: Cleanup PR previews
+
+on:
+  pull_request:
+    types: [closed]
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout gh-pages branch
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+      - name: Remove preview folder for PR
+        run: |
+          PR=${{ github.event.number }}
+          DIR="previews/pr-${PR}"
+          echo "Removing $DIR if it exists"
+          if [ -d "$DIR" ]; then
+            git rm -r --ignore-unmatch "$DIR" || true
+            git commit -m "ci: remove preview for PR #${PR}" || echo "nothing to commit"
+            git push origin HEAD:gh-pages
+          else
+            echo "No preview to remove"
+          fi

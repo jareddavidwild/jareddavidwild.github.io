@@ -4,7 +4,8 @@ import * as THREE from 'three';
 
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
-import CILogo from './assets/cloudIntelligence.png';
+// cube texture (separate from hero avatar)
+import cubeTexture from './assets/cubeTexture.jpg';
 // We'll choose the best available image format at runtime (avif -> webp -> jpg/jpeg)
 // using a small fetch probe. This allows the build to include modern formats
 // when available while keeping fallbacks.
@@ -59,15 +60,27 @@ async function chooseBestImage(basePath) {
     const exts = ['.avif', '.webp', '.jpg', '.jpeg'];
     for (const ext of exts) {
         const url = `${basePath}${ext}`;
+        // Try HEAD first (cheap on servers that support it)
         try {
             const resp = await fetch(url, { method: 'HEAD' });
             if (resp && resp.ok && resp.headers.get('content-type')?.startsWith('image')) {
                 return url;
             }
         } catch (e) {
+            // HEAD may be blocked by some hosts — fall through to a GET probe below
+        }
+
+        // HEAD didn't work or wasn't acceptable; try a GET probe (we won't read the body)
+        try {
+            const respGet = await fetch(url, { method: 'GET' });
+            if (respGet && respGet.ok && respGet.headers.get('content-type')?.startsWith('image')) {
+                return url;
+            }
+        } catch (e) {
             // ignore and try next
         }
     }
+
     // as a final fallback, return the jpg
     return `${basePath}.jpg`;
 }
@@ -78,8 +91,8 @@ async function chooseBestImage(basePath) {
     const spaceTexture = new THREE.TextureLoader().load(spaceUrl);
     scene.background = spaceTexture;
 })();
-//Cube
-const cloudTexture = new THREE.TextureLoader().load(CILogo)
+// Cube (use a separate cube texture so hero avatar is not applied to the 3D cube)
+const cloudTexture = new THREE.TextureLoader().load(cubeTexture)
 const cloudIntel = new THREE.Mesh(
     new THREE.BoxGeometry(65,20,65),
     new THREE.MeshBasicMaterial({map: cloudTexture})
