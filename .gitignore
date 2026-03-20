@@ -1,2 +1,5 @@
-.idea/
-node_modules/
+/dist
+assets/optimized
+.DS_Store
+node_modules
+.env
