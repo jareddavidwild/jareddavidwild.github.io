@@ -12,49 +12,61 @@ import cubeTexture from './assets/cubeTexture.jpg';
 import moon from './assets/moonSurface.jpg';
 import normal from './assets/normalMoon.jpeg';
 
-const scene = new THREE.Scene();
-
-const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight);
-
-const renderer = new THREE.WebGLRenderer({
-    canvas: document.querySelector('#bg'),
-});
-
-renderer.setPixelRatio(window.devicePixelRatio);
-renderer.setSize(window.innerWidth, window.innerHeight);
-camera.position.setZ(30);
-
-renderer.render(scene, camera);
-
-const geometry = new THREE.TorusGeometry(10, 3, 16, 100);
-const material = new THREE.MeshStandardMaterial({ color: 0xFF6347});
-const torus = new THREE.Mesh(geometry, material);
-
-scene.add(torus);
-
-const pointLight = new THREE.PointLight(0xFFFFFF)
-pointLight.position.set(-355,355,-355);
-
-const ambientLight = new THREE.AmbientLight(0xe1e6ed);
-scene.add(ambientLight, pointLight);
-
-/*const lightHelper = new THREE.PointLightHelper(pointLight);
-const gridHelper = new THREE.GridHelper(200, 50);
-scene.add(gridHelper);*/
-
-const controls = new OrbitControls(camera, renderer.domElement);
-
-function addStar() {
-    const geometry = new THREE.SphereGeometry(0.25, 24, 24);
-    const material = new THREE.MeshStandardMaterial({color:0xffffff});
-    const star = new THREE.Mesh(geometry, material);
-
-    const [x, y, z] = Array(3).fill().map(() => THREE.MathUtils.randFloatSpread(500));
-
-    star.position.set(x, y, z);
-    scene.add(star);
+// Check WebGL availability. If unavailable (headless browsers, restricted contexts),
+// skip initializing Three.js to avoid runtime errors.
+const canvas = document.querySelector('#bg');
+let _webglAvailable = false;
+try {
+    if (canvas) {
+        const gl = canvas.getContext('webgl2') || canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+        _webglAvailable = !!gl;
+    }
+} catch (e) {
+    _webglAvailable = false;
 }
-Array(500).fill().forEach(addStar);
+
+if (_webglAvailable) {
+    const scene = new THREE.Scene();
+
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight);
+
+    const renderer = new THREE.WebGLRenderer({ canvas });
+
+    renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    camera.position.setZ(30);
+
+    renderer.render(scene, camera);
+
+    const geometry = new THREE.TorusGeometry(10, 3, 16, 100);
+    const material = new THREE.MeshStandardMaterial({ color: 0xFF6347});
+    const torus = new THREE.Mesh(geometry, material);
+
+    scene.add(torus);
+
+    const pointLight = new THREE.PointLight(0xFFFFFF);
+    pointLight.position.set(-355,355,-355);
+
+    const ambientLight = new THREE.AmbientLight(0xe1e6ed);
+    scene.add(ambientLight, pointLight);
+
+    /*const lightHelper = new THREE.PointLightHelper(pointLight);
+    const gridHelper = new THREE.GridHelper(200, 50);
+    scene.add(gridHelper);*/
+
+    const controls = new OrbitControls(camera, renderer.domElement);
+
+    function addStar() {
+        const geometry = new THREE.SphereGeometry(0.25, 24, 24);
+        const material = new THREE.MeshStandardMaterial({color:0xffffff});
+        const star = new THREE.Mesh(geometry, material);
+
+        const [x, y, z] = Array(3).fill().map(() => THREE.MathUtils.randFloatSpread(500));
+
+        star.position.set(x, y, z);
+        scene.add(star);
+    }
+    Array(500).fill().forEach(addStar);
 // Helper: probe for best image variant. Attempts .avif, .webp, then provided fallback.
 async function chooseBestImage(basePath) {
     const exts = ['.avif', '.webp', '.jpg', '.jpeg'];
@@ -168,6 +180,12 @@ function animate() {
 }
 
 animate();
+
+    // end Three.js block
+} else {
+    // WebGL not available: hide the canvas to avoid visual noise
+    if (canvas) canvas.style.display = 'none';
+}
 
 // Simple stat counter: animate numbers when the stats block becomes visible
 function animateNumber(el, target, duration = 1200) {
