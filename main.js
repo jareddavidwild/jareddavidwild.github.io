@@ -5,12 +5,10 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
 // cube texture (separate from hero avatar)
-import cubeTexture from './assets/cubeTexture.jpg';
-// We'll choose the best available image format at runtime (avif -> webp -> jpg/jpeg)
-// using a small fetch probe. This allows the build to include modern formats
-// when available while keeping fallbacks.
-import moon from './assets/moonSurface.jpg';
-import normal from './assets/normalMoon.jpeg';
+// Texture files are resolved at runtime from the optimized folder so we can
+// prefer modern formats (avif/webp) while keeping fallbacks. Do not statically
+// import heavy image assets here - load them asynchronously below and attach
+// them to materials when available.
 
 // Check WebGL availability. If unavailable (headless browsers, restricted contexts),
 // skip initializing Three.js to avoid runtime errors.
@@ -103,39 +101,80 @@ async function chooseBestImage(basePath) {
     const spaceTexture = new THREE.TextureLoader().load(spaceUrl);
     scene.background = spaceTexture;
 })();
-// Cube (use a separate cube texture so hero avatar is not applied to the 3D cube)
-const cloudTexture = new THREE.TextureLoader().load(cubeTexture)
+// Create placeholder meshes first, then load textures asynchronously from
+// the optimized asset folder and attach them when available. This avoids
+// runtime errors if a texture isn't present and gives us a place to log
+// load errors for easier debugging.
+const loader = new THREE.TextureLoader();
+
 const cloudIntel = new THREE.Mesh(
     new THREE.BoxGeometry(65,20,65),
-    new THREE.MeshBasicMaterial({map: cloudTexture})
+    new THREE.MeshBasicMaterial({color: 0x888888})
 );
-
 scene.add(cloudIntel);
-
-const moonTexture = new THREE.TextureLoader().load(moon)
-const normalTexture = new THREE.TextureLoader().load(normal)
 
 const jupiterObj = new THREE.Mesh(
     new THREE.SphereGeometry(24, 32, 32),
-    new THREE.MeshStandardMaterial({map: moonTexture,
-    normalMap: normalTexture})
+    new THREE.MeshStandardMaterial({color: 0x999999})
 );
-
 scene.add(jupiterObj);
 
-// fire texture: prefer optimized variants if present
-let fireTextureUrl = './assets/optimized/wideFire';
-(async () => {
-    fireTextureUrl = await chooseBestImage('./assets/optimized/wideFire');
-    const fireTexture = new THREE.TextureLoader().load(fireTextureUrl);
-    fireObj.material.map = fireTexture;
-})();
 const fireObj = new THREE.Mesh(
     new THREE.BoxGeometry(25,25,25),
     new THREE.MeshBasicMaterial({map: null})
 );
-
 scene.add(fireObj);
+
+// Load textures (preferring optimized variants) and attach to materials.
+(async () => {
+    try {
+        const cubeUrl = await chooseBestImage('./assets/optimized/cubeTexture');
+        loader.load(cubeUrl,
+            tex => {
+                cloudIntel.material.map = tex;
+                cloudIntel.material.needsUpdate = true;
+                console.log('cloud texture loaded:', cubeUrl);
+            },
+            undefined,
+            err => console.error('cloud texture load error', err)
+        );
+
+        const moonUrl = await chooseBestImage('./assets/optimized/moonSurface');
+        loader.load(moonUrl,
+            tex => {
+                jupiterObj.material.map = tex;
+                jupiterObj.material.needsUpdate = true;
+                console.log('moon texture loaded:', moonUrl);
+            },
+            undefined,
+            err => console.error('moon texture load error', err)
+        );
+
+        const normalUrl = await chooseBestImage('./assets/optimized/normalMoon');
+        loader.load(normalUrl,
+            tex => {
+                jupiterObj.material.normalMap = tex;
+                jupiterObj.material.needsUpdate = true;
+                console.log('normal map loaded:', normalUrl);
+            },
+            undefined,
+            err => console.error('normal map load error', err)
+        );
+
+        const fireUrl = await chooseBestImage('./assets/optimized/wideFire');
+        loader.load(fireUrl,
+            tex => {
+                fireObj.material.map = tex;
+                fireObj.material.needsUpdate = true;
+                console.log('fire texture loaded:', fireUrl);
+            },
+            undefined,
+            err => console.error('fire texture load error', err)
+        );
+    } catch (e) {
+        console.error('Error loading textures:', e);
+    }
+})();
 
 cloudIntel.position.z = 60;
 cloudIntel.position.x = 39;
