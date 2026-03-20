@@ -139,6 +139,22 @@ scene.add(fireObj);
             err => console.error('cloud texture load error', err)
         );
 
+        // Torus (donut) texture: use an existing optimized texture file. By
+        // default we apply the 'cloudIntelligence' asset, but this can be
+        // changed to any other optimized asset present in `assets/optimized`.
+        const torusUrl = await chooseBestImage('./assets/optimized/cloudIntelligence');
+        loader.load(torusUrl,
+            tex => {
+                if (torus && torus.material) {
+                    torus.material.map = tex;
+                    torus.material.needsUpdate = true;
+                    console.log('torus texture loaded:', torusUrl);
+                }
+            },
+            undefined,
+            err => console.error('torus texture load error', err)
+        );
+
         const moonUrl = await chooseBestImage('./assets/optimized/moonSurface');
         loader.load(moonUrl,
             tex => {
