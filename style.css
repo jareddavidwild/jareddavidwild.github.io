@@ -348,3 +348,24 @@ a {
 .quote {
     margin-top: 4rem;
 }
+
+/* Texture debug overlay */
+#texture-debug{
+    position: fixed;
+    top: 12px;
+    right: 12px;
+    background: rgba(6,10,14,0.7);
+    color: #dfe8f5;
+    padding: 8px 10px;
+    border-radius: 8px;
+    font-size: 12px;
+    z-index: 99999;
+    box-shadow: 0 6px 18px rgba(2,6,23,0.6);
+    min-width: 160px;
+    pointer-events: none; /* non-interactive */
+}
+#texture-debug .texture-line{ display:flex; justify-content:space-between; gap:8px; padding:4px 0; }
+#texture-debug .texture-line .name{ color:var(--muted); text-transform:capitalize; }
+#texture-debug .texture-line.loaded .status{ color:#9be79b; }
+#texture-debug .texture-line.error .status{ color:#ff8b8b; }
+#texture-debug .texture-line.pending .status{ color:#cbd5e1; }

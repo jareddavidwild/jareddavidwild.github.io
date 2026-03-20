@@ -107,6 +107,36 @@ async function chooseBestImage(basePath) {
 // load errors for easier debugging.
 const loader = new THREE.TextureLoader();
 
+    // Small on-screen debug overlay for texture load statuses.
+    function createDebugOverlay() {
+        const existing = document.getElementById('texture-debug');
+        if (existing) return existing;
+        const box = document.createElement('div');
+        box.id = 'texture-debug';
+        box.innerHTML = `
+            <div class="texture-line" data-name="cloud"> <span class="name">cloud</span> <span class="status">pending</span> </div>
+            <div class="texture-line" data-name="moon">  <span class="name">moon</span>  <span class="status">pending</span> </div>
+            <div class="texture-line" data-name="normal"> <span class="name">normal</span> <span class="status">pending</span> </div>
+            <div class="texture-line" data-name="fire">   <span class="name">fire</span>   <span class="status">pending</span> </div>
+            <div class="texture-line" data-name="torus">  <span class="name">torus</span>  <span class="status">pending</span> </div>
+        `;
+        document.body.appendChild(box);
+        return box;
+    }
+
+    function updateTextureStatus(name, state, info) {
+        const box = createDebugOverlay();
+        const line = box.querySelector(`.texture-line[data-name="${name}"]`);
+        if (!line) return;
+        const statusSpan = line.querySelector('.status');
+        statusSpan.textContent = state;
+        line.classList.remove('loaded','error','pending');
+        line.classList.add(state);
+        if (info) {
+            statusSpan.title = info;
+        }
+    }
+
 const cloudIntel = new THREE.Mesh(
     new THREE.BoxGeometry(65,20,65),
     new THREE.MeshBasicMaterial({color: 0x888888})
@@ -134,25 +164,33 @@ scene.add(fireObj);
                 cloudIntel.material.map = tex;
                 cloudIntel.material.needsUpdate = true;
                 console.log('cloud texture loaded:', cubeUrl);
+                updateTextureStatus('cloud', 'loaded', cubeUrl);
             },
             undefined,
-            err => console.error('cloud texture load error', err)
+            err => {
+                console.error('cloud texture load error', err);
+                updateTextureStatus('cloud', 'error', String(err));
+            }
         );
 
         // Torus (donut) texture: use an existing optimized texture file. By
         // default we apply the 'cloudIntelligence' asset, but this can be
         // changed to any other optimized asset present in `assets/optimized`.
-        const torusUrl = await chooseBestImage('./assets/optimized/cloudIntelligence');
+        const torusUrl = await chooseBestImage('./assets/optimized/highresSpace');
         loader.load(torusUrl,
             tex => {
                 if (torus && torus.material) {
                     torus.material.map = tex;
                     torus.material.needsUpdate = true;
                     console.log('torus texture loaded:', torusUrl);
+                    updateTextureStatus('torus', 'loaded', torusUrl);
                 }
             },
             undefined,
-            err => console.error('torus texture load error', err)
+            err => {
+                console.error('torus texture load error', err)
+                updateTextureStatus('torus', 'error', String(err));
+            }
         );
 
         const moonUrl = await chooseBestImage('./assets/optimized/moonSurface');
@@ -161,9 +199,13 @@ scene.add(fireObj);
                 jupiterObj.material.map = tex;
                 jupiterObj.material.needsUpdate = true;
                 console.log('moon texture loaded:', moonUrl);
+                updateTextureStatus('moon', 'loaded', moonUrl);
             },
             undefined,
-            err => console.error('moon texture load error', err)
+            err => {
+                console.error('moon texture load error', err);
+                updateTextureStatus('moon', 'error', String(err));
+            }
         );
 
         const normalUrl = await chooseBestImage('./assets/optimized/normalMoon');
@@ -172,9 +214,13 @@ scene.add(fireObj);
                 jupiterObj.material.normalMap = tex;
                 jupiterObj.material.needsUpdate = true;
                 console.log('normal map loaded:', normalUrl);
+                updateTextureStatus('normal', 'loaded', normalUrl);
             },
             undefined,
-            err => console.error('normal map load error', err)
+            err => {
+                console.error('normal map load error', err);
+                updateTextureStatus('normal', 'error', String(err));
+            }
         );
 
         const fireUrl = await chooseBestImage('./assets/optimized/wideFire');
@@ -183,9 +229,13 @@ scene.add(fireObj);
                 fireObj.material.map = tex;
                 fireObj.material.needsUpdate = true;
                 console.log('fire texture loaded:', fireUrl);
+                updateTextureStatus('fire', 'loaded', fireUrl);
             },
             undefined,
-            err => console.error('fire texture load error', err)
+            err => {
+                console.error('fire texture load error', err);
+                updateTextureStatus('fire', 'error', String(err));
+            }
         );
     } catch (e) {
         console.error('Error loading textures:', e);
