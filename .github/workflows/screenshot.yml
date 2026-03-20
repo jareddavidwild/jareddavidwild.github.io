@@ -1,0 +1,32 @@
+name: Screenshot test
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  screenshot:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
+
+      - name: Run screenshot test
+        run: npm run test:screenshot:ci
+
+      - name: Upload screenshot artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: screenshot
+          path: tests/screenshot.png

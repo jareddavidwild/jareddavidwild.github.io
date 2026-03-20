@@ -1,3 +1,8 @@
+node_modules/
+dist/
+assets/optimized/
+tests/screenshot.png
+.DS_Store
 /dist
 assets/optimized
 .DS_Store

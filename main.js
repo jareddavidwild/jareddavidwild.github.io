@@ -168,3 +168,67 @@ function animate() {
 }
 
 animate();
+
+// Simple stat counter: animate numbers when the stats block becomes visible
+function animateNumber(el, target, duration = 1200) {
+    const start = performance.now();
+    const from = 0;
+    function step(now) {
+        const t = Math.min((now - start) / duration, 1);
+        const val = Math.floor(from + (target - from) * t);
+        el.textContent = val;
+        if (t < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+}
+
+const statsBlock = document.querySelector('.stats');
+if (statsBlock && 'IntersectionObserver' in window) {
+    const observer = new IntersectionObserver((entries, obs) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const numbers = statsBlock.querySelectorAll('.stat-number');
+                numbers.forEach(n => {
+                    const target = parseInt(n.getAttribute('data-target') || '0', 10);
+                    animateNumber(n, target, 1200 + Math.random() * 600);
+                });
+                obs.disconnect();
+            }
+        });
+    }, { threshold: 0.4 });
+    observer.observe(statsBlock);
+} else if (statsBlock) {
+    // fallback: run immediately
+    statsBlock.querySelectorAll('.stat-number').forEach(n => {
+        const target = parseInt(n.getAttribute('data-target') || '0', 10);
+        animateNumber(n, target, 1200);
+    });
+}
+
+// Ripple effect for buttons: create and remove a ripple span at click position
+function bindButtonRipples() {
+    document.querySelectorAll('.btn').forEach(btn => {
+        btn.addEventListener('click', function (e) {
+            const rect = this.getBoundingClientRect();
+            const size = Math.max(rect.width, rect.height) * 1.2;
+            const x = e.clientX - rect.left - size / 2;
+            const y = e.clientY - rect.top - size / 2;
+
+            const ripple = document.createElement('span');
+            ripple.className = 'ripple';
+            ripple.style.width = ripple.style.height = `${size}px`;
+            ripple.style.left = `${x}px`;
+            ripple.style.top = `${y}px`;
+            this.appendChild(ripple);
+
+            ripple.addEventListener('animationend', () => ripple.remove());
+        });
+    });
+}
+
+// initialize ripples after DOM is ready
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', bindButtonRipples);
+} else {
+    bindButtonRipples();
+}
