@@ -36,10 +36,10 @@ header {
 }
 
 section {
-    grid-column: 2 / 20;
+    grid-column: 2 / span 10;
     padding: 0;
-    line-height: 2px;
-    margin: 20rem 0 20rem 0;
+    line-height: 1.6;
+    margin: 4rem 0;
 }
 
 blockquote {
@@ -49,7 +49,7 @@ blockquote {
 }
 
 p {
-    grid-column: 2 / 10;
+    grid-column: 2 / span 8;
     color: azure;
     padding-bottom: 20px;
     font-family: elevon, sans-serif;
@@ -66,5 +66,5 @@ a {
 }
 
 .quote {
-    margin-top: 200px;
+    margin-top: 4rem;
 }

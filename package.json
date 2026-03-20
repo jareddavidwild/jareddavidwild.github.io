@@ -4,10 +4,13 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "serve": "vite preview"
+    "serve": "vite preview",
+    "optimize-images": "bash ./scripts/optimize-images.sh",
+    "convert-images": "bash ./scripts/convert-to-webp-avif.sh",
+    "build-deploy": "bash ./build.sh"
   },
   "devDependencies": {
-    "vite": "^2.6.4"
+    "vite": "^8.0.1"
   },
   "dependencies": {
     "three": "^0.133.1"

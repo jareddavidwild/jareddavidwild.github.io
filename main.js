@@ -5,10 +5,11 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
 import CILogo from './assets/cloudIntelligence.png';
-import highResSpace from './assets/highresSpace.jpg';
+// We'll choose the best available image format at runtime (avif -> webp -> jpg/jpeg)
+// using a small fetch probe. This allows the build to include modern formats
+// when available while keeping fallbacks.
 import moon from './assets/moonSurface.jpg';
 import normal from './assets/normalMoon.jpeg';
-import fire from './assets/wideFire.jpeg';
 
 const scene = new THREE.Scene();
 
@@ -52,10 +53,31 @@ function addStar() {
     star.position.set(x, y, z);
     scene.add(star);
 }
-Array(5000).fill().forEach(addStar);
-//Space
-const spaceTexture = new THREE.TextureLoader().load(highResSpace);
-scene.background = spaceTexture;
+Array(500).fill().forEach(addStar);
+// Helper: probe for best image variant. Attempts .avif, .webp, then provided fallback.
+async function chooseBestImage(basePath) {
+    const exts = ['.avif', '.webp', '.jpg', '.jpeg'];
+    for (const ext of exts) {
+        const url = `${basePath}${ext}`;
+        try {
+            const resp = await fetch(url, { method: 'HEAD' });
+            if (resp && resp.ok && resp.headers.get('content-type')?.startsWith('image')) {
+                return url;
+            }
+        } catch (e) {
+            // ignore and try next
+        }
+    }
+    // as a final fallback, return the jpg
+    return `${basePath}.jpg`;
+}
+
+//Space (load best format available)
+(async () => {
+    const spaceUrl = await chooseBestImage('./assets/optimized/highresSpace');
+    const spaceTexture = new THREE.TextureLoader().load(spaceUrl);
+    scene.background = spaceTexture;
+})();
 //Cube
 const cloudTexture = new THREE.TextureLoader().load(CILogo)
 const cloudIntel = new THREE.Mesh(
@@ -76,10 +98,16 @@ const jupiterObj = new THREE.Mesh(
 
 scene.add(jupiterObj);
 
-const fireTexture = new THREE.TextureLoader().load(fire)
+// fire texture: prefer optimized variants if present
+let fireTextureUrl = './assets/optimized/wideFire';
+(async () => {
+    fireTextureUrl = await chooseBestImage('./assets/optimized/wideFire');
+    const fireTexture = new THREE.TextureLoader().load(fireTextureUrl);
+    fireObj.material.map = fireTexture;
+})();
 const fireObj = new THREE.Mesh(
     new THREE.BoxGeometry(25,25,25),
-    new THREE.MeshBasicMaterial({map: fireTexture})
+    new THREE.MeshBasicMaterial({map: null})
 );
 
 scene.add(fireObj);
