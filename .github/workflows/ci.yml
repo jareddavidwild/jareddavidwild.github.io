@@ -65,16 +65,35 @@ jobs:
           name: dist
           path: dist
 
-      - name: Configure Pages
-        uses: actions/configure-pages@v3
-
-      - name: Upload Pages artifact (production)
-        uses: actions/upload-pages-artifact@v1
-        with:
-          path: dist
-
-      - name: Deploy to GitHub Pages (production)
-        uses: actions/deploy-pages@v1
+      - name: Deploy to gh-pages (production) via git
+        env:
+          REPO: https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
+        run: |
+          set -euo pipefail
+          echo "Deploying production site to gh-pages branch"
+          # clone or init gh-pages branch
+          rm -rf gh-pages || true
+          if git ls-remote --exit-code --heads "$REPO" gh-pages >/dev/null 2>&1; then
+            git clone --depth 1 --branch gh-pages "$REPO" gh-pages
+          else
+            mkdir gh-pages
+            cd gh-pages
+            git init
+            git remote add origin "$REPO"
+            git checkout -b gh-pages
+            cd ..
+          fi
+          cd gh-pages
+          # remove existing files and copy new build
+          git rm -rf . || true
+          cp -a ../dist/. .
+          git add -A
+          if git diff --staged --quiet; then
+            echo "No changes to deploy"
+          else
+            git commit -m "chore(pages): deploy production site from CI - ${{ github.sha }}"
+            git push origin gh-pages --force
+          fi
 
   preview:
     needs: build
@@ -86,24 +105,39 @@ jobs:
         with:
           name: dist
           path: dist
-      - name: Prepare preview subfolder
+      - name: Prepare preview subfolder and deploy to gh-pages via git
+        env:
+          REPO: https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
         run: |
-          set -e
+          set -euo pipefail
+          echo "Preparing preview subfolder for PR #${{ github.event.number }}"
           PREVIEW_DIR=preview-dist/previews/pr-${{ github.event.number }}
+          rm -rf preview-dist || true
           mkdir -p "$PREVIEW_DIR"
-          # copy built site into per-PR subfolder so Pages serves it under /previews/pr-<number>/
           cp -a dist/. "$PREVIEW_DIR/"
-
-      - name: Configure Pages
-        uses: actions/configure-pages@v3
-
-      - name: Upload Pages artifact (preview)
-        uses: actions/upload-pages-artifact@v1
-        with:
-          path: preview-dist
-
-      - name: Deploy to GitHub Pages (preview)
-        uses: actions/deploy-pages@v1
+          # clone or init gh-pages branch
+          rm -rf gh-pages || true
+          if git ls-remote --exit-code --heads "$REPO" gh-pages >/dev/null 2>&1; then
+            git clone --depth 1 --branch gh-pages "$REPO" gh-pages
+          else
+            mkdir gh-pages
+            cd gh-pages
+            git init
+            git remote add origin "$REPO"
+            git checkout -b gh-pages
+            cd ..
+          fi
+          cd gh-pages
+          # ensure previews directory exists and copy preview files
+          mkdir -p previews
+          cp -a ../preview-dist/previews/pr-${{ github.event.number }}/ .
+          git add -A
+          if git diff --staged --quiet; then
+            echo "No changes to preview deploy"
+          else
+            git commit -m "chore(pages): add preview for PR #${{ github.event.number }} - ${{ github.sha }}"
+            git push origin gh-pages
+          fi
       - name: Comment preview URL on PR
         uses: peter-evans/create-or-update-comment@v4
         with:
