@@ -84,6 +84,9 @@ jobs:
             cd ..
           fi
           cd gh-pages
+          # Configure git user for commits
+           git config user.name "github-actions[bot]"
+           git config user.email "github-actions[bot]@users.noreply.github.com"
           # remove existing files and copy new build
           git rm -rf . || true
           cp -a ../dist/. .
@@ -128,6 +131,9 @@ jobs:
             cd ..
           fi
           cd gh-pages
+          # Configure git user for commits
+           git config user.name "github-actions[bot]"
+           git config user.email "github-actions[bot]@users.noreply.github.com"
           # ensure previews directory exists and copy preview files
           mkdir -p previews
           cp -a ../preview-dist/previews/pr-${{ github.event.number }}/ .
