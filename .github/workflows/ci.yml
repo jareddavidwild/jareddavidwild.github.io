@@ -6,6 +6,12 @@ on:
   pull_request:
     branches: [ main ]
 
+# Required permissions for the Pages actions
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -57,13 +63,17 @@ jobs:
         with:
           name: dist
           path: dist
-      - name: Deploy to GitHub Pages (production)
-        uses: JamesIves/github-pages-deploy-action@v4
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v3
+
+      - name: Upload Pages artifact (production)
+        uses: actions/upload-pages-artifact@v1
         with:
-          branch: gh-pages
-          folder: dist
-          clean: true
-          token: ${{ secrets.GITHUB_TOKEN }}
+          path: dist
+
+      - name: Deploy to GitHub Pages (production)
+        uses: actions/deploy-pages@v1
 
   preview:
     needs: build
@@ -75,14 +85,24 @@ jobs:
         with:
           name: dist
           path: dist
-      - name: Deploy preview to gh-pages/previews/pr-<number>
-        uses: JamesIves/github-pages-deploy-action@v4
+      - name: Prepare preview subfolder
+        run: |
+          set -e
+          PREVIEW_DIR=preview-dist/previews/pr-${{ github.event.number }}
+          mkdir -p "$PREVIEW_DIR"
+          # copy built site into per-PR subfolder so Pages serves it under /previews/pr-<number>/
+          cp -a dist/. "$PREVIEW_DIR/"
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v3
+
+      - name: Upload Pages artifact (preview)
+        uses: actions/upload-pages-artifact@v1
         with:
-          branch: gh-pages
-          folder: dist
-          destination_dir: previews/pr-${{ github.event.number }}
-          clean: false
-          token: ${{ secrets.GITHUB_TOKEN }}
+          path: preview-dist
+
+      - name: Deploy to GitHub Pages (preview)
+        uses: actions/deploy-pages@v1
       - name: Comment preview URL on PR
         uses: peter-evans/create-or-update-comment@v4
         with:
