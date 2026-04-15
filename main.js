@@ -4,6 +4,15 @@ import * as THREE from 'three';
 
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
+// Statically import common textures so Vite emits reliable hashed URLs
+// that we can use at runtime. These provide the most deterministic
+// source for TextureLoader in production builds.
+import cubeTextureStatic from './assets/cubeTexture.jpg';
+import moonSurfaceStatic from './assets/moonSurface.jpg';
+import normalMoonStatic from './assets/normalMoon.jpeg';
+import wideFireStatic from './assets/wideFire.jpeg';
+import highresSpaceStatic from './assets/highresSpace.jpg';
+
 // cube texture (separate from hero avatar)
 // Texture files are resolved at runtime from the optimized folder so we can
 // prefer modern formats (avif/webp) while keeping fallbacks. Do not statically
@@ -67,50 +76,106 @@ if (_webglAvailable) {
     Array(500).fill().forEach(addStar);
 // Helper: probe for best image variant. Attempts .avif, .webp, then provided fallback.
 async function chooseBestImage(basePath) {
-    const exts = ['.avif', '.webp', '.jpg', '.jpeg'];
-    for (const ext of exts) {
-        const url = `${basePath}${ext}`;
-        // Try HEAD first (cheap on servers that support it)
+    // Build a list of candidate URLs to try. basePath is usually like
+    // './assets/optimized/highresSpace' in source, but in production Vite
+    // often emits hashed files under '/assets/'. We'll try (in order):
+    // 1. emitted filename via findEmittedAsset
+    // 2. asset under the same assets folder as the running module
+    // 3. absolute /assets/ path
+    // 4. original basePath + ext
+    const exts = ['.avif', '.webp', '.jpg', '.jpeg', '.png'];
+
+    // Helper: derive assets base from the currently executing module/script
+    function assetsBaseFromScript() {
+        try {
+            const script = document.querySelector('script[type="module"][src]');
+            if (!script) return '/assets/';
+            const url = new URL(script.src, location.href);
+            // script.src points to .../assets/index-<hash>.js — replace last segment
+            url.pathname = url.pathname.replace(/\/[^/]*$/, '/');
+            return url.pathname;
+        } catch (e) {
+            return '/assets/';
+        }
+    }
+
+    const assetsBase = assetsBaseFromScript();
+
+    // If basePath contains 'optimized', extract the baseName (e.g. highresSpace)
+    const m = /(?:\/(?:assets\/)?optimized\/|\.\/assets\/optimized\/)([A-Za-z0-9_\-]+)$/i.exec(basePath);
+    const baseName = m ? m[1] : basePath.split('/').pop();
+
+    const candidates = [];
+    // prefer emitted asset (if Vite included it)
+    const emitted = findEmittedAsset(baseName);
+    if (emitted) candidates.push(emitted);
+
+    // try under assetsBase (same folder as built module)
+    for (const ext of exts) candidates.push(`${assetsBase}${baseName}${ext}`);
+
+    // try absolute /assets/
+    for (const ext of exts) candidates.push(`/assets/${baseName}${ext}`);
+
+    // fallback to the original basePath variants
+    for (const ext of exts) candidates.push(`${basePath}${ext}`);
+
+    // De-duplicate while preserving order
+    const seen = new Set();
+    const uniq = candidates.filter(u => {
+        if (!u || seen.has(u)) return false;
+        seen.add(u);
+        return true;
+    });
+
+    for (const url of uniq) {
         try {
             const resp = await fetch(url, { method: 'HEAD' });
             if (resp && resp.ok && resp.headers.get('content-type')?.startsWith('image')) {
                 return url;
             }
         } catch (e) {
-            // HEAD may be blocked by some hosts — fall through to a GET probe below
+            // HEAD may be blocked; try GET
         }
 
-        // HEAD didn't work or wasn't acceptable; try a GET probe (we won't read the body)
         try {
             const respGet = await fetch(url, { method: 'GET' });
             if (respGet && respGet.ok && respGet.headers.get('content-type')?.startsWith('image')) {
                 return url;
             }
         } catch (e) {
-            // ignore and try next
+            // swallow and continue
         }
     }
 
-    // as a final fallback, return the jpg
-    return `${basePath}.jpg`;
+    // last-resort: return the first unique candidate so TextureLoader attempts it
+    return uniq[0] || `${basePath}.jpg`;
 }
 
-// Build a map of optimized assets emitted by Vite at build time. This
-// lets us resolve hashed filenames created by the bundler instead of
-// guessing filenames at runtime. import.meta.glob with `as: 'url'` and
-// `eager: true` returns an object mapping the source path to the
-// final emitted URL.
-const emittedOptimized = typeof import.meta !== 'undefined' && import.meta.glob
-    ? import.meta.glob('./assets/optimized/*.{avif,webp,jpg,jpeg,png}', { as: 'url', eager: true })
+// Build a map of emitted assets (both top-level `assets/` and
+// `assets/optimized/`) using import.meta.glob so we can resolve hashed
+// filenames created by the bundler instead of guessing filenames at
+// runtime. The mapping keys are source paths; values are final URLs.
+const emittedAssets = (typeof import.meta !== 'undefined' && import.meta.glob)
+    ? import.meta.glob('./assets/**/*.{avif,webp,jpg,jpeg,png}', { as: 'url', eager: true })
     : {};
 
+// Find an emitted asset by base name. We try exact matches first, then
+// fallback to substring matching so we pick up hashed filenames like
+// `highresSpace-kCZFFUe8.avif` emitted by Vite.
 function findEmittedAsset(baseName) {
-    const exts = ['.avif', '.webp', '.jpg', '.jpeg', '.png'];
+    if (!emittedAssets) return null;
+    // exact filename candidates
+    const exts = ['.avif', '.webp', '.jpg', '.jpeg', '.png', '.png'];
     for (const ext of exts) {
-        const key = `./assets/optimized/${baseName}${ext}`;
-        if (emittedOptimized && Object.prototype.hasOwnProperty.call(emittedOptimized, key)) {
-            return emittedOptimized[key];
-        }
+        const key1 = `./assets/optimized/${baseName}${ext}`;
+        const key2 = `./assets/${baseName}${ext}`;
+        if (Object.prototype.hasOwnProperty.call(emittedAssets, key1)) return emittedAssets[key1];
+        if (Object.prototype.hasOwnProperty.call(emittedAssets, key2)) return emittedAssets[key2];
+    }
+
+    // substring match (handles hashed filenames)
+    for (const k of Object.keys(emittedAssets)) {
+        if (k.indexOf(baseName) !== -1) return emittedAssets[k];
     }
     return null;
 }
@@ -180,7 +245,7 @@ scene.add(fireObj);
 // Load textures (preferring optimized variants) and attach to materials.
 (async () => {
     try {
-    const cubeUrl = findEmittedAsset('cubeTexture') || await chooseBestImage('./assets/optimized/cubeTexture');
+    const cubeUrl = findEmittedAsset('cubeTexture') || cubeTextureStatic || await chooseBestImage('./assets/optimized/cubeTexture');
         loader.load(cubeUrl,
             tex => {
                 cloudIntel.material.map = tex;
@@ -198,7 +263,7 @@ scene.add(fireObj);
         // Torus (donut) texture: use an existing optimized texture file. By
         // default we apply the 'cloudIntelligence' asset, but this can be
         // changed to any other optimized asset present in `assets/optimized`.
-    const torusUrl = findEmittedAsset('highresSpace') || await chooseBestImage('./assets/optimized/highresSpace');
+    const torusUrl = findEmittedAsset('highresSpace') || highresSpaceStatic || await chooseBestImage('./assets/optimized/highresSpace');
         loader.load(torusUrl,
             tex => {
                 if (torus && torus.material) {
@@ -215,7 +280,7 @@ scene.add(fireObj);
             }
         );
 
-    const moonUrl = findEmittedAsset('moonSurface') || await chooseBestImage('./assets/optimized/moonSurface');
+    const moonUrl = findEmittedAsset('moonSurface') || moonSurfaceStatic || await chooseBestImage('./assets/optimized/moonSurface');
         loader.load(moonUrl,
             tex => {
                 jupiterObj.material.map = tex;
@@ -230,7 +295,7 @@ scene.add(fireObj);
             }
         );
 
-    const normalUrl = findEmittedAsset('normalMoon') || await chooseBestImage('./assets/optimized/normalMoon');
+    const normalUrl = findEmittedAsset('normalMoon') || normalMoonStatic || await chooseBestImage('./assets/optimized/normalMoon');
         loader.load(normalUrl,
             tex => {
                 jupiterObj.material.normalMap = tex;
@@ -245,7 +310,7 @@ scene.add(fireObj);
             }
         );
 
-    const fireUrl = findEmittedAsset('wideFire') || await chooseBestImage('./assets/optimized/wideFire');
+    const fireUrl = findEmittedAsset('wideFire') || wideFireStatic || await chooseBestImage('./assets/optimized/wideFire');
         loader.load(fireUrl,
             tex => {
                 fireObj.material.map = tex;
