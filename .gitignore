@@ -8,3 +8,7 @@ assets/optimized
 .DS_Store
 node_modules
 .env
+
+# Ignore backup lockfiles to avoid malformed entries in CI
+package-lock.json.bak
+*.bak
