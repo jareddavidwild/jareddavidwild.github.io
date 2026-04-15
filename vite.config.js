@@ -12,6 +12,11 @@ try {
 
 // Small build config to reduce chunk warnings and split vendor (three) into its own chunk
 module.exports = defineConfig({
+  // When deploying to GitHub Pages under a project path (example:
+  // https://<owner>.github.io/<repo>/) set the base to the repository
+  // name so built asset URLs are correct. This repo publishes under
+  // /jaredwild.github.io/ so we'll set that as the base.
+  base: '/jaredwild.github.io/',
   plugins: viteImagemin
     ? [
         viteImagemin({
