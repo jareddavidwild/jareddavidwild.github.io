@@ -15,6 +15,9 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      # Deploy as a user-page at root '/'. Set SITE_BASE to '/' so Vite emits root-relative asset URLs
+      SITE_BASE: '/'
     outputs:
       artifact-name: dist
     steps:
