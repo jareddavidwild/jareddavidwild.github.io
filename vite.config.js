@@ -16,7 +16,10 @@ module.exports = defineConfig({
   // https://<owner>.github.io/<repo>/) set the base to the repository
   // name so built asset URLs are correct. This repo publishes under
   // /jareddavidwild.github.io/ so we'll set that as the base.
-  base: '/jareddavidwild.github.io/',
+    // Allow overriding the base path via SITE_BASE env var. For user/org
+    // pages repos named <user>.github.io the site is served at the root
+    // and the base should be '/'. For project pages it may be '/repo-name/'.
+    base: process.env.SITE_BASE || '/',
   plugins: viteImagemin
     ? [
         viteImagemin({
