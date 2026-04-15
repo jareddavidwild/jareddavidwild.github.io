@@ -190,8 +190,8 @@ scene.add(fireObj);
             },
             undefined,
             err => {
-                console.error('cloud texture load error', err);
-                updateTextureStatus('cloud', 'error', String(err));
+                console.error('cloud texture load error', cubeUrl, err);
+                updateTextureStatus('cloud', 'error', cubeUrl + ' — ' + String(err));
             }
         );
 
@@ -210,8 +210,8 @@ scene.add(fireObj);
             },
             undefined,
             err => {
-                console.error('torus texture load error', err)
-                updateTextureStatus('torus', 'error', String(err));
+                console.error('torus texture load error', torusUrl, err)
+                updateTextureStatus('torus', 'error', torusUrl + ' — ' + String(err));
             }
         );
 
@@ -225,8 +225,8 @@ scene.add(fireObj);
             },
             undefined,
             err => {
-                console.error('moon texture load error', err);
-                updateTextureStatus('moon', 'error', String(err));
+                console.error('moon texture load error', moonUrl, err);
+                updateTextureStatus('moon', 'error', moonUrl + ' — ' + String(err));
             }
         );
 
@@ -240,8 +240,8 @@ scene.add(fireObj);
             },
             undefined,
             err => {
-                console.error('normal map load error', err);
-                updateTextureStatus('normal', 'error', String(err));
+                console.error('normal map load error', normalUrl, err);
+                updateTextureStatus('normal', 'error', normalUrl + ' — ' + String(err));
             }
         );
 
@@ -255,8 +255,8 @@ scene.add(fireObj);
             },
             undefined,
             err => {
-                console.error('fire texture load error', err);
-                updateTextureStatus('fire', 'error', String(err));
+                console.error('fire texture load error', fireUrl, err);
+                updateTextureStatus('fire', 'error', fireUrl + ' — ' + String(err));
             }
         );
     } catch (e) {
