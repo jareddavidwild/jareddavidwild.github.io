@@ -95,9 +95,31 @@ async function chooseBestImage(basePath) {
     return `${basePath}.jpg`;
 }
 
+// Build a map of optimized assets emitted by Vite at build time. This
+// lets us resolve hashed filenames created by the bundler instead of
+// guessing filenames at runtime. import.meta.glob with `as: 'url'` and
+// `eager: true` returns an object mapping the source path to the
+// final emitted URL.
+const emittedOptimized = typeof import.meta !== 'undefined' && import.meta.glob
+    ? import.meta.glob('./assets/optimized/*.{avif,webp,jpg,jpeg,png}', { as: 'url', eager: true })
+    : {};
+
+function findEmittedAsset(baseName) {
+    const exts = ['.avif', '.webp', '.jpg', '.jpeg', '.png'];
+    for (const ext of exts) {
+        const key = `./assets/optimized/${baseName}${ext}`;
+        if (emittedOptimized && Object.prototype.hasOwnProperty.call(emittedOptimized, key)) {
+            return emittedOptimized[key];
+        }
+    }
+    return null;
+}
+
 //Space (load best format available)
 (async () => {
-    const spaceUrl = await chooseBestImage('./assets/optimized/highresSpace');
+    // Prefer build-time emitted optimized asset if available.
+    let spaceUrl = findEmittedAsset('highresSpace');
+    if (!spaceUrl) spaceUrl = await chooseBestImage('./assets/optimized/highresSpace');
     const spaceTexture = new THREE.TextureLoader().load(spaceUrl);
     scene.background = spaceTexture;
 })();
@@ -158,7 +180,7 @@ scene.add(fireObj);
 // Load textures (preferring optimized variants) and attach to materials.
 (async () => {
     try {
-        const cubeUrl = await chooseBestImage('./assets/optimized/cubeTexture');
+    const cubeUrl = findEmittedAsset('cubeTexture') || await chooseBestImage('./assets/optimized/cubeTexture');
         loader.load(cubeUrl,
             tex => {
                 cloudIntel.material.map = tex;
@@ -176,7 +198,7 @@ scene.add(fireObj);
         // Torus (donut) texture: use an existing optimized texture file. By
         // default we apply the 'cloudIntelligence' asset, but this can be
         // changed to any other optimized asset present in `assets/optimized`.
-        const torusUrl = await chooseBestImage('./assets/optimized/highresSpace');
+    const torusUrl = findEmittedAsset('highresSpace') || await chooseBestImage('./assets/optimized/highresSpace');
         loader.load(torusUrl,
             tex => {
                 if (torus && torus.material) {
@@ -193,7 +215,7 @@ scene.add(fireObj);
             }
         );
 
-        const moonUrl = await chooseBestImage('./assets/optimized/moonSurface');
+    const moonUrl = findEmittedAsset('moonSurface') || await chooseBestImage('./assets/optimized/moonSurface');
         loader.load(moonUrl,
             tex => {
                 jupiterObj.material.map = tex;
@@ -208,7 +230,7 @@ scene.add(fireObj);
             }
         );
 
-        const normalUrl = await chooseBestImage('./assets/optimized/normalMoon');
+    const normalUrl = findEmittedAsset('normalMoon') || await chooseBestImage('./assets/optimized/normalMoon');
         loader.load(normalUrl,
             tex => {
                 jupiterObj.material.normalMap = tex;
@@ -223,7 +245,7 @@ scene.add(fireObj);
             }
         );
 
-        const fireUrl = await chooseBestImage('./assets/optimized/wideFire');
+    const fireUrl = findEmittedAsset('wideFire') || await chooseBestImage('./assets/optimized/wideFire');
         loader.load(fireUrl,
             tex => {
                 fireObj.material.map = tex;
