@@ -12,6 +12,11 @@ import moonSurfaceStatic from './assets/moonSurface.jpg';
 import normalMoonStatic from './assets/normalMoon.jpeg';
 import wideFireStatic from './assets/wideFire.jpeg';
 import highresSpaceStatic from './assets/highresSpace.jpg';
+import highresSpaceOptimized from './assets/optimized/highresSpace.jpg';
+import cubeTextureOptimized from './assets/optimized/cubeTexture.jpg';
+import moonSurfaceOptimized from './assets/optimized/moonSurface.jpg';
+import normalMoonOptimized from './assets/optimized/normalMoon.jpeg';
+import wideFireOptimized from './assets/optimized/wideFire.jpeg';
 
 // cube texture (separate from hero avatar)
 // Texture files are resolved at runtime from the optimized folder so we can
@@ -180,13 +185,24 @@ function findEmittedAsset(baseName) {
     return null;
 }
 
-//Space (load best format available)
-(async () => {
-    // Prefer build-time emitted optimized asset if available.
-    let spaceUrl = findEmittedAsset('highresSpace');
-    if (!spaceUrl) spaceUrl = await chooseBestImage('./assets/optimized/highresSpace');
-    const spaceTexture = new THREE.TextureLoader().load(spaceUrl);
-    scene.background = spaceTexture;
+// Space: prefer a statically-imported optimized image so built bundles
+// reference the correct hashed URL. Fall back to the existing dynamic
+// resolution when needed.
+(function () {
+    try {
+        const resolved = typeof highresSpaceOptimized !== 'undefined' && highresSpaceOptimized
+            ? highresSpaceOptimized
+            : (findEmittedAsset('highresSpace') || highresSpaceStatic);
+        const spaceTexture = new THREE.TextureLoader().load(resolved);
+        scene.background = spaceTexture;
+    } catch (e) {
+        // If anything goes wrong, fall back to the async probe (best-effort).
+        (async () => {
+            const spaceUrl = findEmittedAsset('highresSpace') || await chooseBestImage('./assets/optimized/highresSpace');
+            const spaceTexture = new THREE.TextureLoader().load(spaceUrl);
+            scene.background = spaceTexture;
+        })();
+    }
 })();
 // Create placeholder meshes first, then load textures asynchronously from
 // the optimized asset folder and attach them when available. This avoids
@@ -245,7 +261,7 @@ scene.add(fireObj);
 // Load textures (preferring optimized variants) and attach to materials.
 (async () => {
     try {
-    const cubeUrl = findEmittedAsset('cubeTexture') || cubeTextureStatic || await chooseBestImage('./assets/optimized/cubeTexture');
+    const cubeUrl = findEmittedAsset('cubeTexture') || cubeTextureOptimized || cubeTextureStatic || await chooseBestImage('./assets/optimized/cubeTexture');
         loader.load(cubeUrl,
             tex => {
                 cloudIntel.material.map = tex;
@@ -263,7 +279,7 @@ scene.add(fireObj);
         // Torus (donut) texture: use an existing optimized texture file. By
         // default we apply the 'cloudIntelligence' asset, but this can be
         // changed to any other optimized asset present in `assets/optimized`.
-    const torusUrl = findEmittedAsset('highresSpace') || highresSpaceStatic || await chooseBestImage('./assets/optimized/highresSpace');
+    const torusUrl = findEmittedAsset('highresSpace') || highresSpaceOptimized || highresSpaceStatic || await chooseBestImage('./assets/optimized/highresSpace');
         loader.load(torusUrl,
             tex => {
                 if (torus && torus.material) {
@@ -280,7 +296,7 @@ scene.add(fireObj);
             }
         );
 
-    const moonUrl = findEmittedAsset('moonSurface') || moonSurfaceStatic || await chooseBestImage('./assets/optimized/moonSurface');
+    const moonUrl = findEmittedAsset('moonSurface') || moonSurfaceOptimized || moonSurfaceStatic || await chooseBestImage('./assets/optimized/moonSurface');
         loader.load(moonUrl,
             tex => {
                 jupiterObj.material.map = tex;
@@ -295,7 +311,7 @@ scene.add(fireObj);
             }
         );
 
-    const normalUrl = findEmittedAsset('normalMoon') || normalMoonStatic || await chooseBestImage('./assets/optimized/normalMoon');
+    const normalUrl = findEmittedAsset('normalMoon') || normalMoonOptimized || normalMoonStatic || await chooseBestImage('./assets/optimized/normalMoon');
         loader.load(normalUrl,
             tex => {
                 jupiterObj.material.normalMap = tex;
@@ -310,7 +326,7 @@ scene.add(fireObj);
             }
         );
 
-    const fireUrl = findEmittedAsset('wideFire') || wideFireStatic || await chooseBestImage('./assets/optimized/wideFire');
+    const fireUrl = findEmittedAsset('wideFire') || wideFireOptimized || wideFireStatic || await chooseBestImage('./assets/optimized/wideFire');
         loader.load(fireUrl,
             tex => {
                 fireObj.material.map = tex;
