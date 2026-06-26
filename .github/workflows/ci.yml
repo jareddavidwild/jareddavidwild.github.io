@@ -2,155 +2,42 @@ name: CI
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
-# Required permissions for the Pages actions
 permissions:
-  contents: write
+  contents: read
   pages: write
   id-token: write
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    env:
-      # Deploy as a user-page at root '/'. Set SITE_BASE to '/' so Vite emits root-relative asset URLs
-      SITE_BASE: '/'
-    outputs:
-      artifact-name: dist
     steps:
       - uses: actions/checkout@v4
-      - name: Use Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
-          # Vite requires Node.js >=20.19 or >=22.12; use Node 20.x to satisfy this
           node-version: '20'
-      - name: Ensure no built artifacts are committed
-        run: |
-          echo "Checking for tracked build artifacts..."
-          # list tracked files under dist/ or assets/optimized; fail if any are present
-          set -e
-          FOUND=false
-          for p in dist assets/optimized; do
-            if git ls-files --error-unmatch "$p" >/dev/null 2>&1 || [ -n "$(git ls-files "$p" 2>/dev/null)" ]; then
-              echo "Found tracked files under $p:" || true
-              git ls-files "$p" || true
-              FOUND=true
-            fi
-          done
-          if [ "$FOUND" = true ]; then
-            echo "Error: repository contains generated build artifacts (dist/ or assets/optimized). Remove them from commits and rerun." >&2
-            exit 1
-          fi
+          cache: 'npm'
+      - uses: actions/configure-pages@v5
       - name: Install dependencies
         run: npm ci
-      - name: Run linter
-        run: |
-          npm run lint || true
       - name: Build
         run: npm run build
-      - name: Upload dist
-        uses: actions/upload-artifact@v4
+        env:
+          SITE_BASE: '/'
+      - uses: actions/upload-pages-artifact@v3
         with:
-          name: dist
           path: dist
 
   deploy:
     needs: build
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Download build artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: dist
-          path: dist
-
-      - name: Deploy to gh-pages (production) via git
-        env:
-          REPO: https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
-        run: |
-          set -euo pipefail
-          echo "Deploying production site to gh-pages branch"
-          # clone or init gh-pages branch
-          rm -rf gh-pages || true
-          if git ls-remote --exit-code --heads "$REPO" gh-pages >/dev/null 2>&1; then
-            git clone --depth 1 --branch gh-pages "$REPO" gh-pages
-          else
-            mkdir gh-pages
-            cd gh-pages
-            git init
-            git remote add origin "$REPO"
-            git checkout -b gh-pages
-            cd ..
-          fi
-          cd gh-pages
-          # Configure git user for commits
-           git config user.name "github-actions[bot]"
-           git config user.email "github-actions[bot]@users.noreply.github.com"
-          # remove existing files and copy new build
-          git rm -rf . || true
-          cp -a ../dist/. .
-          git add -A
-          if git diff --staged --quiet; then
-            echo "No changes to deploy"
-          else
-            git commit -m "chore(pages): deploy production site from CI - ${{ github.sha }}"
-            git push origin gh-pages --force
-          fi
-
-  preview:
-    needs: build
-    if: github.event_name == 'pull_request'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Download build artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: dist
-          path: dist
-      - name: Prepare preview subfolder and deploy to gh-pages via git
-        env:
-          REPO: https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
-        run: |
-          set -euo pipefail
-          echo "Preparing preview subfolder for PR #${{ github.event.number }}"
-          PREVIEW_DIR=preview-dist/previews/pr-${{ github.event.number }}
-          rm -rf preview-dist || true
-          mkdir -p "$PREVIEW_DIR"
-          cp -a dist/. "$PREVIEW_DIR/"
-          # clone or init gh-pages branch
-          rm -rf gh-pages || true
-          if git ls-remote --exit-code --heads "$REPO" gh-pages >/dev/null 2>&1; then
-            git clone --depth 1 --branch gh-pages "$REPO" gh-pages
-          else
-            mkdir gh-pages
-            cd gh-pages
-            git init
-            git remote add origin "$REPO"
-            git checkout -b gh-pages
-            cd ..
-          fi
-          cd gh-pages
-          # Configure git user for commits
-           git config user.name "github-actions[bot]"
-           git config user.email "github-actions[bot]@users.noreply.github.com"
-          # ensure previews directory exists and copy preview files
-          mkdir -p previews
-          cp -a ../preview-dist/previews/pr-${{ github.event.number }}/ .
-          git add -A
-          if git diff --staged --quiet; then
-            echo "No changes to preview deploy"
-          else
-            git commit -m "chore(pages): add preview for PR #${{ github.event.number }} - ${{ github.sha }}"
-            git push origin gh-pages
-          fi
-      - name: Comment preview URL on PR
-        uses: peter-evans/create-or-update-comment@v4
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          issue-number: ${{ github.event.number }}
-          body: |
-            ✅ Preview built for this PR: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/previews/pr-${{ github.event.number }}/
+      - uses: actions/deploy-pages@v4
+        id: deployment
