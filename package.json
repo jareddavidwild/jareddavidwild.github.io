@@ -13,7 +13,7 @@
     "resize-avatar": "bash ./scripts/resize-avatar.sh"
     },
   "devDependencies": {
-    "vite": "^8.0.1"
+    "vite": "^5.4.0"
     },
   "dependencies": {
   "three": "^0.133.1"
