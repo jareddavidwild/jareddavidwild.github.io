@@ -3,111 +3,88 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="favicon.svg" />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Jared Wild — Sailor - Web Developer - DJ" />
-    <title>Jared Wild — Front-end Developer</title>
+    <meta name="description" content="Jared Wild — Sailor, Web Developer, DJ based in Palma de Mallorca" />
+    <title>Jared Wild — Developer & Sailor</title>
   </head>
   <body>
-    <div id="app"></div>
-  <canvas id="bg"></canvas>
-    <main>
-      <header class="site-header">
-        <div class="brand">
-          <a href="/">Jared Wild</a>
-        </div>
-        <nav class="site-nav">
-          <a href="#about">About</a>
-          <a href="#projects">Projects</a>
-          <a href="#contact">Contact</a>
-        </nav>
-      </header>
+    <canvas id="bg"></canvas>
 
+    <header class="site-header">
+      <div class="brand"><a href="/">Jared Wild</a></div>
+      <nav class="site-nav">
+        <a href="#about">About</a>
+        <a href="#work">Work</a>
+        <a href="#projects">Projects</a>
+        <a href="#contact">Contact</a>
+      </nav>
+    </header>
+
+    <main>
+
+      <!-- Hero -->
       <section class="hero">
         <div class="hero-content">
           <h1>Hi — I'm Jared.</h1>
-          <p class="tagline">Front-end developer, sailor and surf coach.</p>
+          <p class="tagline">Front-end developer, sailor, and surf coach based in Palma.</p>
           <div class="cta">
-            <a class="btn primary" href="#projects">View Projects
-              <span class="icon" aria-hidden="true">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" focusable="false"><path fill="currentColor" d="M10 17l5-5-5-5v10z"/></svg>
-              </span>
-            </a>
-            <a class="btn ghost" href="#contact">Get in touch
-              <span class="icon" aria-hidden="true">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" focusable="false"><path fill="currentColor" d="M10 17l5-5-5-5v10z"/></svg>
-              </span>
-            </a>
+            <a class="btn primary" href="#projects">View Projects</a>
+            <a class="btn ghost" href="#contact">Get in touch</a>
           </div>
         </div>
         <div class="hero-card">
-          <!-- Replace or add ./assets/avatar.jpg with your personal photo to show here -->
-          <img src="./assets/avatar.jpg" alt="Personal photo of Jared Wild" class="hero-avatar">
+          <img src="./assets/avatar.jpg" alt="Jared Wild" class="hero-avatar">
           <div class="hero-meta">
             <strong>Jared Wild</strong>
             <p>Freelance Sailor — Web Developer</p>
-            <p class="social-links">
-              <a href="https://github.com/dOctorWild" aria-label="GitHub">GitHub</a>
-              <a href="#" aria-label="LinkedIn">LinkedIn</a>
-              <a href="#" aria-label="Twitter">Twitter</a>
-            </p>
-            <p style="margin-top:10px"><a class="btn primary" href="./assets/Jared_Wild_CV.pdf" download>Download CV
-                <span class="icon" aria-hidden="true">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" focusable="false"><path fill="currentColor" d="M10 17l5-5-5-5v10z"/></svg>
-                </span>
-              </a></p>
+            <div class="social-links">
+              <a href="https://github.com/dOctorWild">GitHub</a>
+              <a href="#">LinkedIn</a>
+            </div>
+            <a class="btn primary" style="margin-top:0.6rem;width:100%;justify-content:center" href="./assets/Jared_Wild_CV.pdf" download>Download CV</a>
           </div>
         </div>
       </section>
 
-      <section class="widgets">
-        <div class="widget-left">
-          <blockquote class="quote">
-            <p> I live in Palma and love to be in nature. Sailing in the Balearics for the last 2 years has been a great experience, I want to continue to learn and grow onboard different yachts and explore new destinations. I also like to make stuff and put it on the internet</p>
-          </blockquote>
+      <!-- Intro -->
+      <p class="intro-quote">
+        I live in Palma and love being in nature. Sailing in the Balearics for the last two years has been a great experience — I want to continue growing on board different yachts and exploring new destinations. I also like to make things and put them on the internet.
+      </p>
 
-          <div class="projects-preview" id="projects">
+      <!-- Projects + Sidebar -->
+      <div class="widgets">
+        <div class="widget-main">
+          <div class="card" id="projects">
             <h2>Featured Projects</h2>
             <div class="projects-grid">
               <article class="project-card">
-                <img src="./assets/highresSpace.jpg" alt="Project screenshot"/>
+                <img src="./assets/highresSpace.jpg" alt="Space Visualizer">
                 <div class="card-body">
                   <h3>Space Visualizer</h3>
-                  <p>Interactive 3D scene built with Three.js demonstrating textures, lighting, and camera controls.</p>
-                  <p class="card-actions"><a class="btn ghost compact" href="https://github.com/dOctorWild/dOctorWild.github.io">Code
-                      <span class="icon" aria-hidden="true">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" focusable="false"><path fill="currentColor" d="M10 17l5-5-5-5v10z"/></svg>
-                      </span>
-                    </a> <a class="btn primary compact" href="#">Live
-                      <span class="icon" aria-hidden="true">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" focusable="false"><path fill="currentColor" d="M10 17l5-5-5-5v10z"/></svg>
-                      </span>
-                    </a></p>
+                  <p>Interactive 3D scene — Three.js, textures, lighting, and scroll-driven camera.</p>
+                  <div class="card-actions">
+                    <a class="btn ghost compact" href="https://github.com/dOctorWild/dOctorWild.github.io">Code</a>
+                    <a class="btn primary compact" href="#">Live</a>
+                  </div>
                 </div>
               </article>
-
               <article class="project-card">
-                <img src="./assets/moonSurface.jpg" alt="Project screenshot"/>
+                <img src="./assets/moonSurface.jpg" alt="Todo App">
                 <div class="card-body">
                   <h3>Todo App</h3>
-                  <p>A small, focused todo app for managing tasks with a clean interface and offline support.</p>
-                  <p class="card-actions"><a class="btn ghost compact" href="#">Code
-                      <span class="icon" aria-hidden="true">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" focusable="false"><path fill="currentColor" d="M10 17l5-5-5-5v10z"/></svg>
-                      </span>
-                    </a> <a class="btn primary compact" href="#">Live
-                      <span class="icon" aria-hidden="true">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" focusable="false"><path fill="currentColor" d="M10 17l5-5-5-5v10z"/></svg>
-                      </span>
-                    </a></p>
+                  <p>A focused task manager with a clean interface and offline support.</p>
+                  <div class="card-actions">
+                    <a class="btn ghost compact" href="#">Code</a>
+                    <a class="btn primary compact" href="#">Live</a>
+                  </div>
                 </div>
               </article>
             </div>
           </div>
-
         </div>
 
-        <aside class="widget-right">
+        <aside class="widget-side">
           <div class="stats">
             <div class="stat">
               <div class="stat-number" data-target="30">0</div>
@@ -115,7 +92,7 @@
             </div>
             <div class="stat">
               <div class="stat-number" data-target="5">0</div>
-              <div class="stat-label">Years coding</div>
+              <div class="stat-label">Years</div>
             </div>
             <div class="stat">
               <div class="stat-number" data-target="12">0</div>
@@ -123,170 +100,170 @@
             </div>
           </div>
 
-          <div class="skills">
+          <div class="card">
             <h3>Skills</h3>
             <div class="skill-list">
               <span class="skill">JavaScript</span>
               <span class="skill">Three.js</span>
-              <span class="skill">HTML & CSS</span>
+              <span class="skill">HTML &amp; CSS</span>
               <span class="skill">React</span>
+              <span class="skill">Figma</span>
               <span class="skill">Responsive Design</span>
             </div>
           </div>
 
-          <div class="contact-card">
-            <h3>Contact</h3>
-            <p>For contract web work or sailing collaborations, reach out:</p>
-            <p><a href="mailto:jareddavidwild4@gmail.com">jareddavidwild4@gmail.com</a></p>
-            <p><a class="btn primary" href="#contact">Start a project
-                <span class="icon" aria-hidden="true">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" focusable="false"><path fill="currentColor" d="M10 17l5-5-5-5v10z"/></svg>
-                </span>
-              </a></p>
+          <div class="card">
+            <h3>Quick contact</h3>
+            <p style="margin-top:0.35rem">Open to contract web work and sailing collaborations.</p>
+            <a class="contact-email" href="mailto:jareddavidwild4@gmail.com">jareddavidwild4@gmail.com</a>
           </div>
         </aside>
-      </section>
+      </div>
 
-      <section id="about">
+      <!-- About -->
+      <section class="card" id="about">
         <h2>About Me</h2>
-        <p>
-          I'm 25 years old, born in Zimbabwe and raised mostly in South Africa. I studied Computer Science and grew up sailing dinghies as a kid. I now work as a freelance sailor and take on contract web work.
-        </p>
-
-        <p>
-          I enjoy building clean, interactive web experiences and continuing to develop both my maritime and technical skills.
-        </p>
+        <p>I'm 25 years old, born in Zimbabwe and raised mostly in South Africa. I studied Computer Science and grew up sailing dinghies as a kid. I now work as a freelance sailor and take on contract web work.</p>
+        <p>I enjoy building clean, interactive web experiences and continuing to develop both my maritime and technical skills.</p>
+        <p style="margin:0">You can find more of my work on <a href="https://github.com/dOctorWild">GitHub</a> and hear my DJ sets on <a href="https://soundcloud.com/lock_from_lsb">SoundCloud</a>.</p>
       </section>
 
-      <section class="light">
-        <h2>Projects</h2>
-
-        <p>
-          I have created this website.<a href="https://github.com/dOctorWild/dOctorWild.github.io">Check it out on GitHub</a>
-        </p>
-        <p>
-          A todo app that you can add tasks and mark them completed.
-        </p>
-        <p>
-          I also have a SoundCloud profile where I upload my DJ sets and songs.
-          <a href="https://soundcloud.com/lock_from_lsb?utm_source=clipboard&utm_medium=text&utm_campaign=social_sharing">Listen here</a>
-        </p>
-        <p>
-          You can also take a look at my  <a href="https://github.com/dOctorWild">GitHub</a> repos.
-        </p>
-      </section>
-      <blockquote class="quote">
-        <p>“Education is the most powerful weapon which you can use to change the world.”<br>-Nelson Mandela</p>
+      <!-- Quote -->
+      <blockquote>
+        <p>"Education is the most powerful weapon which you can use to change the world." — Nelson Mandela</p>
       </blockquote>
-      <section class="left">
+
+      <!-- Work History -->
+      <section class="card" id="work">
         <h2>Work History</h2>
 
-        <h3>S/Y Tiger - Oyster 675</h3>
-        <p>First Mate / Chef — April 2024 - Present</p>
-        <ul>
-          <li>General upkeep and maintenance of the vessel</li>
-          <li>Deck responsibilities: docking, sail handling and watch duties</li>
-          <li>Sailed long passages (1000+ nautical miles) and managed guest experience</li>
-          <li>Plan, prepare and cook meals for guests</li>
-        </ul>
+        <div class="role">
+          <h3>S/Y Tiger — Oyster 675</h3>
+          <div class="role-meta">
+            <span class="position">First Mate / Chef</span>
+            <span class="date">April 2024 – Present</span>
+          </div>
+          <ul>
+            <li>General upkeep and maintenance of the vessel</li>
+            <li>Deck responsibilities: docking, sail handling, and watch duties</li>
+            <li>Sailed long passages (1000+ nautical miles) and managed guest experience</li>
+            <li>Planned, prepared, and cooked meals for guests</li>
+          </ul>
+        </div>
 
-        <h3>S/Y Dama De Noche - Oyster 82</h3>
-        <p>Watchkeeper — November 2024 - December 2024</p>
-        <ul>
-          <li>Atlantic Crossing</li>
-          <li>Palma de Mallorca - Lanzarote - Antigua</li>
-          <li>Kept the deck and cockpit clean, helped out in the galley, keeping watches</li>
-        </ul>
+        <div class="role">
+          <h3>S/Y Dama De Noche — Oyster 82</h3>
+          <div class="role-meta">
+            <span class="position">Watchkeeper</span>
+            <span class="date">November 2024 – December 2024</span>
+          </div>
+          <ul>
+            <li>Atlantic Crossing — Palma de Mallorca → Lanzarote → Antigua</li>
+            <li>Kept watches, maintained deck and cockpit, assisted in the galley</li>
+          </ul>
+        </div>
 
-        <p>Watchkeeper — June 2025 - July 2024</p>
-        <ul>
-          <li>Delivery</li>
-          <li>London - Dartmouth - Olbia</li>
-          <li>Kept watches and sailed over 2000 nautical miles </li>
-        </ul>
+        <div class="role">
+          <h3>S/Y Dama De Noche — Oyster 82</h3>
+          <div class="role-meta">
+            <span class="position">Watchkeeper (Delivery)</span>
+            <span class="date">June 2025 – July 2025</span>
+          </div>
+          <ul>
+            <li>Delivery: London → Dartmouth → Olbia</li>
+            <li>Kept watches and sailed over 2000 nautical miles</li>
+          </ul>
+        </div>
 
-        <p>Watchkeeper — March 2026 - May 2026</p>
-        <ul>
-          <li>Atlantic Crossing</li>
-          <li>St Maartin - Horta - Barcelona</li>
-          <li>Kept watches and sailed over 2000 nautical miles </li>
-        </ul>
+        <div class="role">
+          <h3>S/Y Dama De Noche — Oyster 82</h3>
+          <div class="role-meta">
+            <span class="position">Watchkeeper</span>
+            <span class="date">March 2026 – May 2026</span>
+          </div>
+          <ul>
+            <li>Atlantic Crossing — St Maarten → Horta → Barcelona</li>
+            <li>Kept watches and sailed over 2000 nautical miles</li>
+          </ul>
+        </div>
 
-        <h3>S/Y Sunshine ELVI - Contest 62CS</h3>
-        <p>Watchkeeper — April 2026</p>
-        <ul>
-          <li>Delivery Crew of 2</li>
-          <li>Deck responsibilities: docking, sail handling and watch duties</li>
-          <li>Sailed from Palma de Mallorca to Cannes, France</li>
-          <li>Prepare and cook meals for crew</li>
-        </ul>
+        <div class="role">
+          <h3>S/Y Sunshine ELVI — Contest 62CS</h3>
+          <div class="role-meta">
+            <span class="position">Watchkeeper</span>
+            <span class="date">April 2026</span>
+          </div>
+          <ul>
+            <li>Delivery crew of 2 — Palma de Mallorca to Cannes, France</li>
+            <li>Sail handling, docking, and watch duties</li>
+            <li>Prepared and cooked meals for crew</li>
+          </ul>
+        </div>
 
-        <p>Skipper — June 2026</p>
-        <ul>
-          <li>Crossing to Ibiza with owner onboard</li>
-          <li>Deck responsibilities: passage planning, docking, sail handling and watch duties</li>
-          <li>Sailed from Palma de Mallorca to Ibiza and chartered on the coast</li>
-          <li>Prepare and cook meals for guests</li>
-        </ul>
+        <div class="role">
+          <h3>S/Y Sunshine ELVI — Contest 62CS</h3>
+          <div class="role-meta">
+            <span class="position">Skipper</span>
+            <span class="date">June 2026</span>
+          </div>
+          <ul>
+            <li>Crossing to Ibiza with owner on board — passage planning, docking, sail handling</li>
+            <li>Chartered along the coast; prepared and cooked meals for guests</li>
+          </ul>
+        </div>
 
-<h3>Cloud Intelligence</h3>
-        <p>Web Developer — October 2021 - November 2022</p>
-        <ul>
-          <li>Design websites using Figma and build responsive front-ends</li>
-          <li>Develop websites with JavaScript, HTML5 and CSS</li>
-          <li>Maintain and update client sites</li>
-        </ul>
+        <div class="role">
+          <h3>Cloud Intelligence</h3>
+          <div class="role-meta">
+            <span class="position">Web Developer</span>
+            <span class="date">October 2021 – November 2022</span>
+          </div>
+          <ul>
+            <li>Designed websites in Figma and built responsive front-ends</li>
+            <li>Developed with JavaScript, HTML5, and CSS</li>
+            <li>Maintained and updated client sites</li>
+          </ul>
+        </div>
 
-        <h3>Surf Emporium</h3>
-        <p>Surf Instructor / Sales Associate — June 2019 - November 2022</p>
-        <ul>
-          <li>Teach customers how to surf and continually improve their technique</li>
-          <li>Assist customers with product selection in the retail store</li>
-          <li>Provide excellent customer service and on-the-beach support</li>
-        </ul>
+        <div class="role">
+          <h3>Surf Emporium</h3>
+          <div class="role-meta">
+            <span class="position">Surf Instructor / Sales Associate</span>
+            <span class="date">June 2019 – November 2022</span>
+          </div>
+          <ul>
+            <li>Taught customers to surf and helped them improve their technique</li>
+            <li>Assisted with product selection in the retail store</li>
+            <li>Provided customer service and on-the-beach support</li>
+          </ul>
+        </div>
       </section>
 
-      <section class="left">
-        <h2>Contact Details</h2>
-        <p class="contact-intro">Prefer to email? <a href="mailto:jareddavidwild4@gmail.com">jareddavidwild4@gmail.com</a></p>
+      <!-- Contact -->
+      <section class="card" id="contact">
+        <h2>Contact</h2>
+        <p>Prefer email? <a href="mailto:jareddavidwild4@gmail.com">jareddavidwild4@gmail.com</a></p>
 
-        <!-- Netlify-ready contact form. The Netlify attribute will allow Netlify to capture submissions when deployed there. -->
         <form name="contact" method="POST" data-netlify="true" netlify-honeypot="bot-field" class="contact-form">
           <input type="hidden" name="form-name" value="contact">
-          <p style="display:none">
-            <label>Don’t fill this out: <input name="bot-field" /></label>
-          </p>
-          <label>
-            Your name
-            <input type="text" name="name" required>
-          </label>
-          <label>
-            Your email
-            <input type="email" name="email" required>
-          </label>
-          <label>
-            Message
-            <textarea name="message" rows="4" required></textarea>
-          </label>
+          <p style="display:none"><label>Don't fill this out: <input name="bot-field"></label></p>
+          <label>Your name<input type="text" name="name" required placeholder="Name"></label>
+          <label>Your email<input type="email" name="email" required placeholder="email@example.com"></label>
+          <label>Message<textarea name="message" rows="4" required placeholder="What are you working on?"></textarea></label>
           <div class="contact-actions">
             <button type="submit" class="btn primary">Send message</button>
             <a class="btn ghost" href="mailto:jareddavidwild4@gmail.com">Email instead</a>
           </div>
         </form>
-
-        <p><a href="https://github.com/dOctorWild">My GitHub</a></p>
       </section>
 
       <footer class="site-footer">
         <div class="footer-inner">
-          <p>&copy; 2026 Jared Wild — Built with Three.js & Vite</p>
-          <p><a href="/">Back to top</a></p>
+          <p>&copy; 2026 Jared Wild — Built with Three.js &amp; Vite</p>
+          <a href="/">Back to top</a>
         </div>
       </footer>
 
-      <blockquote class="ending">
-        <h2>Thanks for Visiting!</h2>
-      </blockquote>
     </main>
     <script type="module" src="./main.js"></script>
   </body>
