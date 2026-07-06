@@ -69,7 +69,7 @@ html, body {
 main {
     position: relative;
     z-index: 10;
-    width: min(1100px, 100%);
+    width: min(1300px, 100%);
     margin: 0 auto;
     padding: 2.5rem clamp(1rem, 3vw, 2rem) 5rem;
 }
@@ -81,7 +81,7 @@ h1, h2, h3 {
     line-height: 1.25;
     margin: 0;
 }
-h1 { font-size: clamp(2rem, 5vw, 2.8rem); }
+h1 { font-size: clamp(2rem, 5vw, 2.8rem); color: hwb(0 72% 28%); }
 h2 { font-size: 1.25rem; }
 h3 { font-size: 1rem; color: var(--text); font-weight: 600; }
 
@@ -315,27 +315,6 @@ li { margin-bottom: 0.25rem; }
     font-style: italic;
 }
 
-/* === Project cards === */
-.projects-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 0.9rem;
-    margin-top: 0.25rem;
-}
-
-.project-card {
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid var(--card-border);
-    border-radius: var(--radius-sm);
-    overflow: hidden;
-    transition: transform 0.14s, box-shadow 0.14s;
-}
-.project-card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.35); }
-.project-card img { width: 100%; height: 120px; object-fit: cover; display: block; }
-.card-body { padding: 0.85rem 0.9rem; }
-.card-body h3 { font-size: 0.9rem; margin-bottom: 0.3rem; }
-.card-body p { font-size: 0.78rem; margin-bottom: 0.65rem; }
-.card-actions { display: flex; gap: 0.4rem; }
 
 /* === Work history — vertical timeline === */
 .role {

@@ -31,7 +31,7 @@ if (webglAvailable) {
 
     renderer.setPixelRatio(window.devicePixelRatio)
     renderer.setSize(window.innerWidth, window.innerHeight)
-    camera.position.setZ(30)
+    //camera.position.setZ(30)
 
     const loader = new THREE.TextureLoader()
 
