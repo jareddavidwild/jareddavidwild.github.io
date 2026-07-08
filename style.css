@@ -19,10 +19,10 @@ canvas {
     --accent-border: rgba(131, 163, 216, 0.22);
     --card-bg:       rgba(10, 8, 20, 0.56);
     --card-border:   rgba(211, 190, 233, 0.09);
-    --muted:         #8f83bd;
-    --text:          #d3bee9;
-    --heading:       oklch(70.188% 0.04204 180.429);
-    --nav-bg:        rgba(10, 7, 16, 0.90);
+    --muted:         hsl(252, 28%, 72%);
+    --text:          lab(79.32% 10.76 -14.79);
+    --heading:       #c5dfd4;
+    --nav-bg:        rgba(40, 28, 63, 0.9);
     --radius:        12px;
     --radius-sm:     8px;
     --gap:           1.1rem;
@@ -96,7 +96,7 @@ body {
 }
 
 .site-header .brand a {
-    color: hwb(192 7% 64%);
+    color: hwb(192 12% 38%);
     font-weight: 700;
     font-size: 1rem;
     text-decoration: none;
@@ -113,7 +113,7 @@ body {
     padding: 0.28rem 0.85rem;
 }
 .site-nav a {
-    color: hwb(192 7% 64%);
+    color: oklab(52.626% -0.04757 -0.12374);
     text-decoration: none;
     font-size: 0.9rem;
     font-weight: 500;
@@ -396,7 +396,7 @@ li { margin-bottom: 0.25rem; }
 }
 .skill.sail {
     background: rgba(152, 97, 149, 0.14);
-    color: #c490c0;
+    color: hsl(306, 21%, 73%);
     border-color: rgba(152, 97, 149, 0.28);
 }
 .skill-category-label {
