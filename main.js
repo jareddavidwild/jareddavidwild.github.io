@@ -258,14 +258,16 @@ if (renderer) {
         return group
     }
 
+    // Heights stagger above/below the camera's dive path (camera sinks ~0.12/unit
+    // of z travelled), so each one appears at a clearly different depth on screen.
     const jellyfish = [
-        makeJellyfish(-15,  2,  -20),
-        makeJellyfish( 22, -4,  -65),
-        makeJellyfish(-28,  8, -120),
-        makeJellyfish( 18, -8, -185),
-        makeJellyfish(-22,  4, -260),
-        makeJellyfish( 30, -5, -330),
-        makeJellyfish(-18,  6, -400),
+        makeJellyfish(-35, -12, -80),
+        makeJellyfish( 22, -24, -65),
+        makeJellyfish(-30, -20, -120),
+        makeJellyfish( 18, -32, -185),
+        makeJellyfish(-24, -19, -260),
+        makeJellyfish( 32, -28, -330),
+        makeJellyfish(-18, -36, -400),
     ]
 
     // ── Terrain helpers ────────────────────────────────────────────────────
