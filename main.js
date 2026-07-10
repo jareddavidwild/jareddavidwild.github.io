@@ -187,6 +187,31 @@ if (renderer) {
         return b
     })
 
+    // ── Entry splash — whitewater burst at the photo → ocean handoff ────────
+    // Two camera-following clouds of white foam and fine pale-blue spray.
+    // Their opacity (plus a white tint mixed into the fog and clear colour in
+    // moveCamera) peaks the moment the canvas fades in, then dissolves as the
+    // camera sinks — reads as plunging through churned surface water.
+    function makeSplashCloud(count, size, color, spread) {
+        const pos = new Float32Array(count * 3)
+        for (let i = 0; i < count; i++) {
+            pos[i * 3]     = (Math.random() - 0.5) * spread
+            pos[i * 3 + 1] = (Math.random() - 0.5) * spread * 0.7
+            pos[i * 3 + 2] = 15 - Math.random() * 130   // fills the view ahead of the camera
+        }
+        const geo = new THREE.BufferGeometry()
+        geo.setAttribute('position', new THREE.BufferAttribute(pos, 3))
+        return new THREE.Points(geo, new THREE.PointsMaterial({
+            color, size, transparent: true, opacity: 0,
+            map: circleTex, alphaTest: 0.008, depthWrite: false
+        }))
+    }
+    const splashFoam  = makeSplashCloud(420, 2.6, 0xf4f8fc, 150)
+    const splashSpray = makeSplashCloud(260, 1.0, 0xcfe2f4, 120)
+    const splashGroup = new THREE.Group()
+    splashGroup.add(splashFoam, splashSpray)
+    scene.add(splashGroup)
+
     // ── Jellyfish — bell + tendrils + additive glow (no PointLight) ──────────
     // PointLights were the #1 perf killer — each one forces a lighting pass over
     // every mesh in a 35-unit radius. Replaced with a cheap additive-blend sphere.
@@ -485,8 +510,9 @@ if (renderer) {
     // Three colour stops so the photo blends into bright ocean blue first,
     // then darkens naturally as the camera dives deeper.
     const shallowCol = new THREE.Color(0x2a6080)  // bright ocean blue — just below the surface
-    const midCol     = new THREE.Color(0x0a1e3a)  // dark navy — mid ocean
-    const deepCol    = new THREE.Color(0x020308)  // near black — deep ocean
+    const midCol     = new THREE.Color(0x6495ED)  // dark navy — mid ocean
+    const deepCol    = new THREE.Color(0x5D5D61)  // near black — deep ocean
+    const foamCol    = new THREE.Color(0xdfe9f8)  // whitewater — matches the pale sky gradient
 
     function moveCamera() {
         const t = -window.scrollY   // negative when scrolled down
@@ -508,17 +534,33 @@ if (renderer) {
             ? shallowCol.clone().lerp(midCol, depth * 2)
             : midCol.clone().lerp(deepCol, (depth - 0.5) * 2)
 
-        scene.fog.color.copy(col)
-        // Dense fog at surface (hides floor even at partial canvas opacity);
-        // thins slightly with depth so deep structures become visible.
-        scene.fog.density = 0.008 + depth * 0.006
-        renderer.setClearColor(col, Math.min(depth * 0.75, 0.85))
+        // Entry splash: for ~0.6 viewport after the hero, the scene is a
+        // foam-white whiteout that dissolves into the depth colour — the
+        // moment of plunging through the surface. splash runs 1 → 0.
+        const scrolled = -t
+        const splash = 1 - Math.min(Math.max((scrolled - window.innerHeight) / (window.innerHeight * 0.6), 0), 1)
+        const surfaceCol = col.clone().lerp(foamCol, splash)
+
+        scene.fog.color.copy(surfaceCol)
+        // Dense fog at the surface, thickened further by the splash whiteout;
+        // thins with depth so deep structures become visible.
+        scene.fog.density = 0.008 + depth * 0.006 + splash * 0.02
 
         // Move camera torch with the camera so nearby objects are always lit
         camLight.position.copy(camera.position)
 
-        // Fade in quickly (1.8x), fade out just as fast so the transition is snappy
-        canvas.style.opacity = Math.min(depth * 1.8, 1).toFixed(2)
+        // The sailboat photo owns the first screenful: the ocean stays
+        // invisible until the hero is scrolled past, then fades in over a
+        // third of a viewport. The clear colour follows the same fade so the
+        // photo never bleeds through the scene once it's visible.
+        const fade = Math.min(Math.max((scrolled - window.innerHeight) / (window.innerHeight * 0.35), 0), 1)
+        renderer.setClearColor(surfaceCol, fade)
+        canvas.style.opacity = fade.toFixed(2)
+
+        // Splash clouds ride with the camera; foam is thickest right at entry
+        splashGroup.position.copy(camera.position)
+        splashFoam.material.opacity  = splash * 0.75
+        splashSpray.material.opacity = splash * 0.5
     }
     window.addEventListener('scroll', moveCamera, { passive: true })
     moveCamera()
@@ -535,6 +577,16 @@ if (renderer) {
             b.position.x += b.userData.drift
             if (b.position.y > 80) b.position.y = -80
         })
+
+        // Splash foam churns upward while the entry whiteout is visible
+        // (positions are relative to splashGroup, which rides the camera)
+        if (splashFoam.material.opacity > 0.01) {
+            splashFoam.rotation.z  += 0.0012
+            splashFoam.position.y  += 0.05
+            splashSpray.position.y += 0.08
+            if (splashFoam.position.y  > 50) splashFoam.position.y  = 0
+            if (splashSpray.position.y > 50) splashSpray.position.y = 0
+        }
 
         // Jellyfish bob on Y, slowly spin; additive glow pulses opacity
         jellyfish.forEach(j => {
@@ -578,7 +630,7 @@ if (renderer) {
 
 // ─── Stat Counter Animation ───────────────────────────────────────────────
 
-function animateNumber(el, target, duration = 1200) {
+function animateNumber(el, target, duration = 3000) {
     const suffix = el.getAttribute('data-suffix') || ''
     const start  = performance.now()
     function step(now) {

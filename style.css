@@ -39,8 +39,8 @@ body::before {
     height: 10vh;
     background: linear-gradient(
         to bottom,
-        rgba(220, 225, 235, 0.38) 0%,
-        rgba(49, 66, 166, 0.12) 55%,
+        #ced4e261 0%,
+        #4351a51f 55%,
         transparent              100%
     );
     z-index: 5;
@@ -49,7 +49,7 @@ body::before {
 
 html {
     height: 100%;
-    background: #070410;
+    background: #c2ceea6c;
 }
 
 body {
@@ -86,7 +86,7 @@ body {
     backdrop-filter: blur(22px) saturate(160%);
     border: 1px solid rgba(131, 163, 216, 0.2);
     border-radius: 14px;
-    transition: transform 0.38s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.35s ease;
+    transition: transform 0.68s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.35s ease;
 }
 
 /* Slides up off-screen when scrolling down past the hero; JS adds/removes this class */
@@ -373,15 +373,34 @@ li { margin-bottom: 0.25rem; }
 @keyframes ripple { to { transform: scale(4); opacity: 0; } }
 
 /* === Layout: widgets row (projects left, sidebar right) === */
+/* Items stretch to the tallest card so the row fills evenly */
 .widgets {
     display: grid;
     grid-template-columns: 1fr 280px;
     gap: var(--gap);
     margin-bottom: var(--gap);
-    align-items: start;
 }
 
 .widget-side { display: flex; flex-direction: column; gap: var(--gap); }
+.widget-side .stats { flex: 1; }
+
+/* Skills stretches, Projects keeps the same 280px width as the sidebar */
+.widget-main {
+    display: grid;
+    grid-template-columns: 1fr 280px;
+    gap: var(--gap);
+}
+
+/* Flex column so the project entry can pin its link to the card bottom */
+.widget-main .card {
+    display: flex;
+    flex-direction: column;
+}
+.project {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
 
 /* === Intro quote === */
 .intro-quote {
@@ -396,22 +415,28 @@ li { margin-bottom: 0.25rem; }
     font-style: italic;
 }
 
-/* === Stats === */
+/* === Stats ===
+   Stacked vertically in the narrow sidebar; the mobile breakpoint
+   flips them back to a horizontal row when the sidebar goes full width. */
 .stats {
     display: flex;
+    flex-direction: column;
     overflow: hidden;
     border-radius: var(--radius);
     border: 1px solid var(--card-border);
 }
 .stat {
     flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
     text-align: center;
     padding: 0.9rem 0.5rem;
     background: var(--card-bg);
     backdrop-filter: blur(16px);
-    border-right: 1px solid var(--card-border);
+    border-bottom: 1px solid var(--card-border);
 }
-.stat:last-child { border-right: none; }
+.stat:last-child { border-bottom: none; }
 .stat-number { font-size: 1.5rem; font-weight: 700; color: var(--heading); line-height: 1; }
 .stat-label { font-size: 0.72rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-top: 0.25rem; }
 
@@ -438,6 +463,35 @@ li { margin-bottom: 0.25rem; }
     color: var(--muted);
     font-weight: 600;
     margin: 0;
+}
+
+/* === Projects card — sits beside Skills in the sidebar === */
+.project-title {
+    color: var(--heading);
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin: 0 0 0.3rem;
+}
+.project-desc {
+    color: var(--muted);
+    font-size: 0.85rem;
+    margin: 0 0 0.6rem;
+}
+.project-link {
+    display: inline-block;
+    align-self: flex-start;
+    margin-top: auto;
+    padding-top: 0.75rem;
+    font-size: 0.83rem;
+    font-weight: 500;
+    color: var(--accent);
+    text-decoration: none;
+    transition: color 0.18s ease, transform 0.18s ease;
+}
+.project-link:hover {
+    color: var(--accent-bright);
+    transform: translateX(2px);
+    text-decoration: none;
 }
 
 /* === Qualifications & Certifications card === */
@@ -621,7 +675,16 @@ blockquote + .card { margin-top: var(--gap); }
     .social-links { justify-content: flex-start; }
 
     .widgets { grid-template-columns: 1fr; }
+    .widget-main { grid-template-columns: 1fr; }
     .widget-side { order: 2; }
+
+    /* Full-width sidebar on mobile — stats fit better as a row */
+    .stats { flex-direction: row; }
+    .stat {
+        border-bottom: none;
+        border-right: 1px solid var(--card-border);
+    }
+    .stat:last-child { border-right: none; }
 
     .site-nav { gap: 0.75rem; }
     .site-nav a { font-size: 0.85rem; }
