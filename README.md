@@ -1,4 +1,4 @@
-# dOctorWild.github.io
+# jareddavidwild.github.io
 My personal website
 
 Using [three.js](https://github.com/mrdoob/three.js/)
